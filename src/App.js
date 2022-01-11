@@ -1,6 +1,8 @@
-import logo from "./logo.svg";
 import "./App.css";
 import { useEffect, useState, useCallback } from "react";
+import { ImageCard } from "./components/image-card";
+import ImageList from "@mui/material/ImageList";
+import CircularProgress from "@mui/material/CircularProgress";
 
 const baseUrl = "http://www.pinkvilla.com/";
 const pageSuffix = "/photo-gallery-feed-page/page";
@@ -11,9 +13,9 @@ const fetchImages = async (page) => (await fetch(buildPageUrl(page))).json();
 function App() {
   const [currentPage, setPage] = useState(0);
   const [images, setImages] = useState([]);
-  // const [isFetching, setIsFetching] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
   const incrementPage = useCallback(() => {
-    setPage(currentPage=>currentPage + 1);
+    setPage((currentPage) => currentPage + 1);
   }, [setPage]);
 
   const addImagesToBuffer = useCallback(
@@ -25,17 +27,21 @@ function App() {
 
   const trackScrolling = useCallback(() => {
     const appElement = document.getElementById("app");
-    if (appElement.getBoundingClientRect().bottom <= window.innerHeight) {
-      console.log("Gettign called");
+    if (
+      appElement.getBoundingClientRect().bottom <= window.innerHeight &&
+      !isFetching
+    ) {
       incrementPage();
     }
-  }, [incrementPage]);
+  }, [incrementPage, isFetching]);
 
   useEffect(() => {
+    setIsFetching(true);
     fetchImages(currentPage).then(({ nodes }) => {
       addImagesToBuffer(nodes);
+      setIsFetching(false);
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
 
   useEffect(() => {
@@ -43,27 +49,22 @@ function App() {
   }, [trackScrolling]);
 
   return (
-    <div className="App" id="app" style={{ height: "100%" }}>
-      <div>
-        <ul
-        // ref={containerRef}
-        // onScroll={handleScroll}
-        // style={{ height: 1600, border: "1px solid" }}
-        >
-          {images.map(
-            ({ node: { title, path, field_photo_image_section, nid } }) => (
-              <li>
-                <a href={`${baseUrl}${path}`} id={nid}>
-                  {title}
-                </a>
-                <img
-                  src={`${baseUrl}${field_photo_image_section}`}
-                  alt={title}
-                />
-              </li>
-            )
-          )}
-        </ul>
+    <div className="App" id="app" style={{ height: "100%", display: "flex" }}>
+      <div style={{ margin: "0 auto" }}>
+        <ImageList sx={{ width: 900 }}>
+          {images.map(({ node }) => (
+            <ImageCard
+              {...node}
+              baseUrl={baseUrl}
+              key={`${node.nid}${node.title}`}
+            />
+          ))}
+        </ImageList>
+        {isFetching ? (
+          <div style={{ margin: "auto" }}>
+            <CircularProgress />
+          </div>
+        ) : null}
       </div>
 
       <div></div>

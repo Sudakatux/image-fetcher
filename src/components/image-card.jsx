@@ -5,12 +5,10 @@ import { baseUrl } from '../constants';
 export const ImageCard = ({ title, path, field_photo_image_section}) =>(
   <ImageListItem>
       <img
-      heigh="200px"
-      width="200px"
       src={`${baseUrl}${field_photo_image_section}`}
       alt={title}/>
 <ImageListItemBar
-title={       <a href={`${baseUrl}${path}`}>
+title={       <a href={`${baseUrl}${path}`} style={{color:'white'}}>
                   {title}
                 </a>}
                 />

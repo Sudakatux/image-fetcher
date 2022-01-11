@@ -1,8 +1,8 @@
 
 import ImageListItem from '@mui/material/ImageListItem';
 import ImageListItemBar from '@mui/material/ImageListItemBar';
-
-export const ImageCard = ({ title, path, field_photo_image_section,baseUrl }) =>(
+import { baseUrl } from '../constants';
+export const ImageCard = ({ title, path, field_photo_image_section}) =>(
   <ImageListItem>
       <img
       heigh="200px"
